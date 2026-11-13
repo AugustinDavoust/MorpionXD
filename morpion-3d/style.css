@@ -172,6 +172,37 @@ button:hover { border-color: var(--accent); }
     var(--pad) calc(var(--pad) + 2 * (100% - 2 * var(--pad) - 2 * var(--gap)) / 3 + 3 * var(--gap) / 2);
 }
 
+.face.bottom { background-image: none; }
+
+.vline {
+  position: absolute;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  --vh: calc(3 * var(--cellw) + 2 * var(--gap));
+}
+
+.vline i {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: 2px;
+  height: var(--vh);
+  transform-origin: 50% 0;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.vline i.a { transform: translateZ(calc(-1 * var(--depth))) rotateX(90deg); }
+.vline i.b { transform: translateZ(calc(-1 * var(--depth))) rotateY(90deg) rotateZ(90deg); }
+
+.vline.p1 { left: calc(var(--pad) + var(--cellw) + var(--gap) / 2); top: calc(var(--pad) + var(--cellw) + var(--gap) / 2); }
+.vline.p2 { left: calc(var(--pad) + var(--cellw) + var(--gap) / 2); top: calc(var(--pad) + 2 * var(--cellw) + 3 * var(--gap) / 2); }
+.vline.p3 { left: calc(var(--pad) + 2 * var(--cellw) + 3 * var(--gap) / 2); top: calc(var(--pad) + var(--cellw) + var(--gap) / 2); }
+.vline.p4 { left: calc(var(--pad) + 2 * var(--cellw) + 3 * var(--gap) / 2); top: calc(var(--pad) + 2 * var(--cellw) + 3 * var(--gap) / 2); }
+
+.cube.flat .vline { display: none; }
+
 .face-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

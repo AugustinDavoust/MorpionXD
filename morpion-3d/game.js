@@ -39,6 +39,7 @@ let flatView = false;
 let lastMoveIndex = null;
 let bannerEl = null;
 let endMessage = null;
+let winLine = null;
 
 const MARK_SVGS = {
   X: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"><line x1="24" y1="24" x2="76" y2="76"/><line x1="76" y1="24" x2="24" y2="76"/></svg>',
@@ -63,6 +64,7 @@ function init() {
   aiThinking = false;
   lastMoveIndex = null;
   endMessage = null;
+  winLine = null;
   render();
   updateStatus();
 }
@@ -89,7 +91,7 @@ function render() {
 
   for (let z = 0; z < 3; z++) {
     const face = document.createElement("div");
-    face.className = "face";
+    face.className = "face" + (z === 0 ? " bottom" : "");
     face.style.setProperty("--z", z);
 
     const grid = document.createElement("div");
@@ -103,6 +105,13 @@ function render() {
 
     face.appendChild(grid);
     cube.appendChild(face);
+  }
+
+  for (const p of ["p1", "p2", "p3", "p4"]) {
+    const vline = document.createElement("div");
+    vline.className = `vline ${p}`;
+    vline.innerHTML = '<i class="a"></i><i class="b"></i>';
+    cube.appendChild(vline);
   }
 
   scene.appendChild(cube);
@@ -123,7 +132,7 @@ function render() {
 function buildCell(i) {
   const value = board[i];
   const box = document.createElement("div");
-  box.className = "cellbox" + (value ? ` taken ${value.toLowerCase()}` : "") + (i === lastMoveIndex ? " last" : "");
+  box.className = "cellbox" + (value ? ` taken ${value.toLowerCase()}` : "") + (i === lastMoveIndex ? " last" : "") + (winLine && winLine.includes(i) ? " win" : "");
   box.dataset.index = i;
 
   const cubeEl = document.createElement("div");
@@ -201,6 +210,7 @@ function applyMove(i) {
 
 function endRound(result) {
   playing = false;
+  winLine = result ? result.line : null;
   if (result) {
     result.line.forEach(i => boardEl.querySelector(`[data-index="${i}"]`).classList.add("win"));
     scores[result.player]++;
