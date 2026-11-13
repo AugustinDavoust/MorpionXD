@@ -36,14 +36,25 @@ const viewToggleBtn = document.getElementById("view-toggle");
 
 let board, current, playing, mode, level, scores, aiThinking;
 let flatView = false;
+let lastMoveIndex = null;
 
 const LAYER_NAMES = ["Étage 1 · bas", "Étage 2 · milieu", "Étage 3 · haut"];
+
+let rx = 55, rz = 45;
+let currentCube = null;
+
+function applyCamera() {
+  if (!currentCube) return;
+  currentCube.style.setProperty("--rx", rx + "deg");
+  currentCube.style.setProperty("--rz", rz + "deg");
+}
 
 function init() {
   board = Array(27).fill(null);
   current = "X";
   playing = true;
   aiThinking = false;
+  lastMoveIndex = null;
   render();
   updateStatus();
 }
@@ -89,17 +100,7 @@ function render() {
 
     for (let y = 0; y < 3; y++) {
       for (let x = 0; x < 3; x++) {
-        const i = z * 9 + y * 3 + x;
-        const value = board[i];
-        const cell = document.createElement("div");
-        cell.className = "cell" + (value ? ` taken ${value.toLowerCase()}` : "") + (i === lastMoveIndex ? " last" : "");
-        cell.dataset.index = i;
-        const mark = document.createElement("span");
-        mark.className = "mark";
-        mark.textContent = value === "X" ? "✕" : value === "O" ? "◯" : "";
-        cell.appendChild(mark);
-        cell.addEventListener("click", () => playCell(i));
-        grid.appendChild(cell);
+        grid.appendChild(buildCell(z * 9 + y * 3 + x));
       }
     }
 
@@ -109,9 +110,35 @@ function render() {
 
   scene.appendChild(cube);
   boardEl.appendChild(scene);
+
+  currentCube = cube;
+  applyCamera();
 }
 
-let lastMoveIndex = null;
+function buildCell(i) {
+  const value = board[i];
+  const box = document.createElement("div");
+  box.className = "cellbox" + (value ? ` taken ${value.toLowerCase()}` : "") + (i === lastMoveIndex ? " last" : "");
+  box.dataset.index = i;
+
+  const cubeEl = document.createElement("div");
+  cubeEl.className = "cellcube";
+
+  for (const f of ["top", "north", "south", "west", "east"]) {
+    const side = document.createElement("div");
+    side.className = `cf ${f}`;
+    cubeEl.appendChild(side);
+  }
+
+  const mark = document.createElement("span");
+  mark.className = "mark";
+  mark.textContent = value === "X" ? "✕" : value === "O" ? "◯" : "";
+  cubeEl.appendChild(mark);
+
+  box.appendChild(cubeEl);
+  box.addEventListener("click", () => playCell(i));
+  return box;
+}
 
 function updateStatus(text) {
   if (text) {
@@ -315,7 +342,71 @@ viewToggleBtn.addEventListener("click", () => {
   flatView = !flatView;
   viewToggleBtn.textContent = flatView ? "Vue 3D" : "Vue à plat";
   render();
+  if (!flatView && currentCube) {
+    currentCube.classList.add("smooth");
+    setTimeout(() => currentCube && currentCube.classList.remove("smooth"), 500);
+  }
 });
+
+let dragging = false;
+let dragDist = 0;
+let lastX = 0, lastY = 0;
+let suppressClick = false;
+
+function dragMove(x, y) {
+  const dx = x - lastX, dy = y - lastY;
+  dragDist += Math.abs(dx) + Math.abs(dy);
+  lastX = x;
+  lastY = y;
+  rz += dx * 0.4;
+  rx = Math.min(85, Math.max(8, rx - dy * 0.4));
+  applyCamera();
+}
+
+boardEl.addEventListener("mousedown", (e) => {
+  if (flatView) return;
+  dragging = true;
+  dragDist = 0;
+  lastX = e.clientX;
+  lastY = e.clientY;
+});
+
+window.addEventListener("mousemove", (e) => {
+  if (!dragging) return;
+  dragMove(e.clientX, e.clientY);
+});
+
+window.addEventListener("mouseup", () => {
+  if (dragging && dragDist > 6) suppressClick = true;
+  dragging = false;
+});
+
+boardEl.addEventListener("click", (e) => {
+  if (suppressClick) {
+    e.stopPropagation();
+    suppressClick = false;
+  }
+}, true);
+
+boardEl.addEventListener("touchstart", (e) => {
+  if (flatView) return;
+  const t = e.touches[0];
+  dragging = true;
+  dragDist = 0;
+  lastX = t.clientX;
+  lastY = t.clientY;
+}, { passive: true });
+
+boardEl.addEventListener("touchmove", (e) => {
+  if (!dragging) return;
+  e.preventDefault();
+  dragMove(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: false });
+
+boardEl.addEventListener("touchend", () => {
+  if (dragging && dragDist > 6) suppressClick = true;
+  dragging = false;
+}, { passive: true });
 
 mode = "pvp";
 level = "easy";
