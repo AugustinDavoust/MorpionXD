@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Morpion 4D</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>Morpion 4D</h1>
+    <p class="subtitle">Hypercube 3×3×3×3 — 81 cases, 272 lignes gagnantes</p>
+
+    <p id="status" class="status">Au tour de ✕</p>
+
+    <div id="board" class="board"></div>
+
+    <div class="scores">
+      <div class="score-box"><span>✕</span><b id="score-x">0</b></div>
+      <div class="score-box"><span>Nuls</span><b id="score-draw">0</b></div>
+      <div class="score-box"><span>◯</span><b id="score-o">0</b></div>
+    </div>
+
+    <button id="reset">Recommencer</button>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
