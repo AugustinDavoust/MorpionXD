@@ -24,7 +24,10 @@ body {
   width: min(96vw, 560px);
   padding: 28px 0;
   text-align: center;
+  cursor: grab;
 }
+
+body.dragging, body.dragging * { cursor: grabbing !important; }
 
 h1 {
   font-size: 36px;
@@ -94,11 +97,11 @@ button:hover { border-color: var(--accent); }
 
 .cube {
   --cube: min(56vmin, 320px);
-  --depth: calc(var(--cube) * 0.52);
   --pad: calc(var(--cube) * 0.03);
   --gap: calc(var(--cube) * 0.02);
   --cellw: calc((var(--cube) - 2 * var(--pad) - 2 * var(--gap)) / 3);
   --ch: var(--cellw);
+  --depth: calc(var(--cellw) + var(--gap));
   --rx: 55deg;
   --rz: 45deg;
   position: relative;
@@ -123,7 +126,7 @@ button:hover { border-color: var(--accent); }
   inset: 0;
   transform: translateZ(calc((var(--z) - 1) * var(--depth)));
   border: 1px solid rgba(233, 69, 96, 0.3);
-  background: rgba(35, 35, 56, 0.28);
+  background: rgba(35, 35, 56, 0.18);
   border-radius: 8px;
   padding: var(--pad);
   transform-style: preserve-3d;
@@ -157,12 +160,13 @@ button:hover { border-color: var(--accent); }
   position: absolute;
   border-radius: 3px;
   backface-visibility: hidden;
+  pointer-events: none;
 }
 
 .cf.top {
   inset: 0;
   transform: translateZ(var(--ch));
-  background: var(--cell);
+  background: rgba(38, 38, 64, 0.18);
 }
 
 .cf.north {
@@ -170,7 +174,7 @@ button:hover { border-color: var(--accent); }
   height: var(--ch);
   transform-origin: 50% 0;
   transform: rotateX(90deg);
-  background: #1b1b2d;
+  background: rgba(27, 27, 45, 0.12);
 }
 
 .cf.south {
@@ -178,7 +182,7 @@ button:hover { border-color: var(--accent); }
   height: var(--ch);
   transform-origin: 50% 100%;
   transform: rotateX(-90deg);
-  background: #323250;
+  background: rgba(50, 50, 80, 0.16);
 }
 
 .cf.west {
@@ -186,7 +190,7 @@ button:hover { border-color: var(--accent); }
   width: var(--ch);
   transform-origin: 0 50%;
   transform: rotateY(-90deg);
-  background: #212138;
+  background: rgba(33, 33, 56, 0.14);
 }
 
 .cf.east {
@@ -194,32 +198,29 @@ button:hover { border-color: var(--accent); }
   width: var(--ch);
   transform-origin: 100% 50%;
   transform: rotateY(90deg);
-  background: #2a2a46;
+  background: rgba(42, 42, 70, 0.15);
 }
-
-.cellbox:not(.taken) .cf { opacity: 0.4; }
 
 .cellbox:not(.taken):hover .cf.top {
-  background: #3a3a68;
-  opacity: 0.75;
+  background: rgba(58, 58, 104, 0.5);
 }
 
-.cellbox.x .cf.top { background: var(--x-color); }
-.cellbox.x .cf.north { background: #065a73; }
-.cellbox.x .cf.south { background: #0d9ec7; }
-.cellbox.x .cf.west { background: #087391; }
-.cellbox.x .cf.east { background: #054b60; }
+.cellbox.x .cf.top { background: rgba(0, 217, 255, 0.4); }
+.cellbox.x .cf.north { background: rgba(6, 90, 115, 0.4); }
+.cellbox.x .cf.south { background: rgba(13, 158, 199, 0.4); }
+.cellbox.x .cf.west { background: rgba(8, 115, 145, 0.4); }
+.cellbox.x .cf.east { background: rgba(5, 75, 96, 0.4); }
 
-.cellbox.o .cf.top { background: var(--o-color); }
-.cellbox.o .cf.north { background: #8f2c50; }
-.cellbox.o .cf.south { background: #ff82ab; }
-.cellbox.o .cf.west { background: #c2436b; }
-.cellbox.o .cf.east { background: #7a2442; }
+.cellbox.o .cf.top { background: rgba(255, 107, 157, 0.4); }
+.cellbox.o .cf.north { background: rgba(143, 44, 80, 0.4); }
+.cellbox.o .cf.south { background: rgba(255, 130, 171, 0.4); }
+.cellbox.o .cf.west { background: rgba(194, 67, 107, 0.4); }
+.cellbox.o .cf.east { background: rgba(122, 36, 66, 0.4); }
 
 .cellbox.last .cf.top { box-shadow: 0 0 0 2px var(--accent); }
 
 .cellbox.win .cf.top {
-  background: var(--accent) !important;
+  background: rgba(233, 69, 96, 0.55) !important;
   animation: pulse 0.6s ease infinite alternate;
 }
 
@@ -236,7 +237,7 @@ button:hover { border-color: var(--accent); }
   font-size: calc(var(--cube) * 0.12);
   color: #ffffff;
   text-shadow: 0 0 4px rgba(0, 0, 0, 0.9), 0 1px 2px rgba(0, 0, 0, 0.8);
-  transform: translate(-50%, -50%) translateZ(calc(var(--ch) + var(--cube) * 0.03)) rotateZ(calc(-1 * var(--rz))) rotateX(calc(-1 * var(--rx)));
+  transform: translate(-50%, -50%) translateZ(calc(var(--ch) / 2)) rotateZ(calc(-1 * var(--rz))) rotateX(calc(-1 * var(--rx)));
   pointer-events: none;
 }
 
@@ -253,21 +254,6 @@ button:hover { border-color: var(--accent); }
   transform: rotateZ(calc(-1 * var(--rz))) rotateX(calc(-1 * var(--rx)));
   transform-origin: left bottom;
 }
-
-.edge {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 2px;
-  height: calc(var(--depth) * 2);
-  background: rgba(233, 69, 96, 0.35);
-  border-radius: 2px;
-}
-
-.e1 { transform: translate(-50%, -50%) translate(calc(var(--cube) / -2), calc(var(--cube) / -2)) rotateX(90deg); }
-.e2 { transform: translate(-50%, -50%) translate(calc(var(--cube) / 2), calc(var(--cube) / -2)) rotateX(90deg); }
-.e3 { transform: translate(-50%, -50%) translate(calc(var(--cube) / -2), calc(var(--cube) / 2)) rotateX(90deg); }
-.e4 { transform: translate(-50%, -50%) translate(calc(var(--cube) / 2), calc(var(--cube) / 2)) rotateX(90deg); }
 
 .cube.flat .face {
   position: relative;
@@ -290,8 +276,7 @@ button:hover { border-color: var(--accent); }
 
 .cube.flat .cellbox:not(.taken):hover { background: #32325a; }
 
-.cube.flat .cf,
-.cube.flat .edge { display: none; }
+.cube.flat .cf { display: none; }
 
 .cube.flat .mark {
   position: static;

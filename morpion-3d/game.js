@@ -79,12 +79,6 @@ function render() {
   const cube = document.createElement("div");
   cube.className = "cube" + (flatView ? " flat" : "");
 
-  for (let e = 1; e <= 4; e++) {
-    const edge = document.createElement("div");
-    edge.className = `edge e${e}`;
-    cube.appendChild(edge);
-  }
-
   for (let z = 0; z < 3; z++) {
     const face = document.createElement("div");
     face.className = "face";
@@ -363,12 +357,14 @@ function dragMove(x, y) {
   applyCamera();
 }
 
-boardEl.addEventListener("mousedown", (e) => {
+document.body.addEventListener("mousedown", (e) => {
   if (flatView) return;
+  if (e.target.closest("button")) return;
   dragging = true;
   dragDist = 0;
   lastX = e.clientX;
   lastY = e.clientY;
+  document.body.classList.add("dragging");
 });
 
 window.addEventListener("mousemove", (e) => {
@@ -379,17 +375,19 @@ window.addEventListener("mousemove", (e) => {
 window.addEventListener("mouseup", () => {
   if (dragging && dragDist > 6) suppressClick = true;
   dragging = false;
+  document.body.classList.remove("dragging");
 });
 
-boardEl.addEventListener("click", (e) => {
+document.addEventListener("click", (e) => {
   if (suppressClick) {
     e.stopPropagation();
     suppressClick = false;
   }
 }, true);
 
-boardEl.addEventListener("touchstart", (e) => {
+document.body.addEventListener("touchstart", (e) => {
   if (flatView) return;
+  if (e.target.closest("button")) return;
   const t = e.touches[0];
   dragging = true;
   dragDist = 0;
@@ -397,13 +395,13 @@ boardEl.addEventListener("touchstart", (e) => {
   lastY = t.clientY;
 }, { passive: true });
 
-boardEl.addEventListener("touchmove", (e) => {
+document.body.addEventListener("touchmove", (e) => {
   if (!dragging) return;
   e.preventDefault();
   dragMove(e.touches[0].clientX, e.touches[0].clientY);
 }, { passive: false });
 
-boardEl.addEventListener("touchend", () => {
+document.body.addEventListener("touchend", () => {
   if (dragging && dragDist > 6) suppressClick = true;
   dragging = false;
 }, { passive: true });
