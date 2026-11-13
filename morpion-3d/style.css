@@ -154,6 +154,22 @@ button:hover { border-color: var(--accent); }
   transform: translateZ(calc((var(--z) - 1) * var(--depth)));
   padding: var(--pad);
   transform-style: preserve-3d;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7));
+  background-repeat: no-repeat;
+  background-size:
+    2px calc(100% - 2 * var(--pad)),
+    2px calc(100% - 2 * var(--pad)),
+    calc(100% - 2 * var(--pad)) 2px,
+    calc(100% - 2 * var(--pad)) 2px;
+  background-position:
+    calc(var(--pad) + (100% - 2 * var(--pad) - 2 * var(--gap)) / 3 + var(--gap) / 2) var(--pad),
+    calc(var(--pad) + 2 * (100% - 2 * var(--pad) - 2 * var(--gap)) / 3 + 3 * var(--gap) / 2) var(--pad),
+    var(--pad) calc(var(--pad) + (100% - 2 * var(--pad) - 2 * var(--gap)) / 3 + var(--gap) / 2),
+    var(--pad) calc(var(--pad) + 2 * (100% - 2 * var(--pad) - 2 * var(--gap)) / 3 + 3 * var(--gap) / 2);
 }
 
 .face-grid {
@@ -283,7 +299,21 @@ button:hover { border-color: var(--accent); }
   padding: 0;
 }
 
-.cube.flat .face-grid { height: auto; }
+.cube.flat .face-grid {
+  height: auto;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7));
+  background-repeat: no-repeat;
+  background-size: 2px 100%, 2px 100%, 100% 2px, 100% 2px;
+  background-position:
+    calc((100% - 2 * var(--gap)) / 3 + var(--gap) / 2) 0,
+    calc(2 * (100% - 2 * var(--gap)) / 3 + 3 * var(--gap) / 2) 0,
+    0 calc((100% - 2 * var(--gap)) / 3 + var(--gap) / 2),
+    0 calc(2 * (100% - 2 * var(--gap)) / 3 + 3 * var(--gap) / 2);
+}
 
 .cube.flat .cellcube { position: static; }
 

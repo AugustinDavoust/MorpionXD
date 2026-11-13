@@ -204,13 +204,12 @@ function endRound(result) {
   if (result) {
     result.line.forEach(i => boardEl.querySelector(`[data-index="${i}"]`).classList.add("win"));
     scores[result.player]++;
-    updateStatus(`${result.player === "X" ? "✕" : "◯"} a gagné ! 🎉`);
     showBanner(`${result.player === "X" ? "✕" : "◯"} a gagné !`, result.player.toLowerCase());
   } else {
     scores.draw++;
-    updateStatus("Match nul 🤝");
     showBanner("Match nul", "");
   }
+  statusEl.textContent = "";
   updateScores();
 }
 
