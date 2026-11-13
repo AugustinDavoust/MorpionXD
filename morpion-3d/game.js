@@ -358,7 +358,7 @@ function dragMove(x, y) {
   dragDist += Math.abs(dx) + Math.abs(dy);
   lastX = x;
   lastY = y;
-  rz += dx * 0.4;
+  rz -= dx * 0.4;
   rx = Math.min(85, Math.max(8, rx - dy * 0.4));
   applyCamera();
 }
