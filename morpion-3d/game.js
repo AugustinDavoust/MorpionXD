@@ -32,8 +32,12 @@ const scoreOEl = document.getElementById("score-o");
 const scoreDrawEl = document.getElementById("score-draw");
 const aiOptionsEl = document.getElementById("ai-options");
 const resetBtn = document.getElementById("reset");
+const viewToggleBtn = document.getElementById("view-toggle");
 
 let board, current, playing, mode, level, scores, aiThinking;
+let flatView = false;
+
+const LAYER_NAMES = ["Étage 1 · bas", "Étage 2 · milieu", "Étage 3 · haut"];
 
 function init() {
   board = Array(27).fill(null);
@@ -57,37 +61,57 @@ function updateScores() {
 
 function render() {
   boardEl.innerHTML = "";
-  const layerNames = ["Étage 1 · bas", "Étage 2 · milieu", "Étage 3 · haut"];
+
+  const scene = document.createElement("div");
+  scene.className = "scene";
+
+  const cube = document.createElement("div");
+  cube.className = "cube" + (flatView ? " flat" : "");
+
+  for (let e = 1; e <= 4; e++) {
+    const edge = document.createElement("div");
+    edge.className = `edge e${e}`;
+    cube.appendChild(edge);
+  }
 
   for (let z = 0; z < 3; z++) {
-    const layer = document.createElement("div");
-    layer.className = "layer";
+    const face = document.createElement("div");
+    face.className = "face";
+    face.style.setProperty("--z", z);
+
+    const label = document.createElement("div");
+    label.className = "face-label";
+    label.textContent = LAYER_NAMES[z];
+    face.appendChild(label);
 
     const grid = document.createElement("div");
-    grid.className = "layer-grid";
+    grid.className = "face-grid";
 
     for (let y = 0; y < 3; y++) {
       for (let x = 0; x < 3; x++) {
         const i = z * 9 + y * 3 + x;
         const value = board[i];
         const cell = document.createElement("div");
-        cell.className = "cell" + (value ? ` taken ${value.toLowerCase()}` : "");
+        cell.className = "cell" + (value ? ` taken ${value.toLowerCase()}` : "") + (i === lastMoveIndex ? " last" : "");
         cell.dataset.index = i;
-        cell.textContent = value === "X" ? "✕" : value === "O" ? "◯" : "";
+        const mark = document.createElement("span");
+        mark.className = "mark";
+        mark.textContent = value === "X" ? "✕" : value === "O" ? "◯" : "";
+        cell.appendChild(mark);
         cell.addEventListener("click", () => playCell(i));
         grid.appendChild(cell);
       }
     }
 
-    const label = document.createElement("div");
-    label.className = "layer-label";
-    label.textContent = layerNames[z];
-
-    layer.appendChild(grid);
-    layer.appendChild(label);
-    boardEl.appendChild(layer);
+    face.appendChild(grid);
+    cube.appendChild(face);
   }
+
+  scene.appendChild(cube);
+  boardEl.appendChild(scene);
 }
+
+let lastMoveIndex = null;
 
 function updateStatus(text) {
   if (text) {
@@ -125,6 +149,7 @@ function playCell(i) {
 
 function applyMove(i) {
   board[i] = current;
+  lastMoveIndex = i;
   render();
 
   const result = winnerOf(board);
@@ -138,10 +163,7 @@ function applyMove(i) {
 function endRound(result) {
   playing = false;
   if (result) {
-    result.line.forEach(i => {
-      const layerIdx = Math.floor(i / 9);
-      boardEl.children[layerIdx].querySelector(`[data-index="${i}"]`).classList.add("win");
-    });
+    result.line.forEach(i => boardEl.querySelector(`[data-index="${i}"]`).classList.add("win"));
     scores[result.player]++;
     updateStatus(`${result.player === "X" ? "✕" : "◯"} a gagné ! 🎉`);
   } else {
@@ -149,6 +171,63 @@ function endRound(result) {
     updateStatus("Match nul 🤝");
   }
   updateScores();
+}
+
+const SEARCH_ABORT = Symbol("abort");
+let searchDeadline = Infinity;
+let searchNodes = 0;
+
+function search(bd, player, depth, alpha, beta) {
+  if ((++searchNodes & 1023) === 0 && Date.now() > searchDeadline) throw SEARCH_ABORT;
+
+  const result = winnerOf(bd);
+  if (result) {
+    const winScore = 1000 + depth;
+    return { index: null, score: result.player === "O" ? winScore : -winScore };
+  }
+
+  if (depth === 0) {
+    return { index: null, score: player === "O" ? evaluate(bd) : -evaluate(bd) };
+  }
+
+  let bestIndex = null;
+  const maximizing = player === "O";
+
+  for (const i of MOVE_ORDER) {
+    if (bd[i] !== null) continue;
+    bd[i] = player;
+    const { score } = search(bd, maximizing ? "X" : "O", depth - 1, alpha, beta);
+    bd[i] = null;
+
+    if (bestIndex === null) bestIndex = i;
+
+    if (maximizing) {
+      if (score > alpha) { alpha = score; bestIndex = i; }
+    } else {
+      if (score < beta) { beta = score; bestIndex = i; }
+    }
+
+    if (alpha >= beta) break;
+  }
+
+  if (bestIndex === null) return { index: null, score: 0 };
+
+  return { index: bestIndex, score: maximizing ? alpha : beta };
+}
+
+function evaluate(bd) {
+  let score = 0;
+  for (const [a, b, c] of LINES) {
+    const va = bd[a], vb = bd[b], vc = bd[c];
+    const x = (va === "X") + (vb === "X") + (vc === "X");
+    const o = (va === "O") + (vb === "O") + (vc === "O");
+    if (x && o) continue;
+    if (o === 2) score += 6;
+    else if (o === 1) score += 1;
+    else if (x === 2) score -= 6;
+    else if (x === 1) score -= 1;
+  }
+  return score;
 }
 
 function triggerAI() {
@@ -209,63 +288,6 @@ function immediateWin(bd, player) {
   return null;
 }
 
-function evaluate(bd) {
-  let score = 0;
-  for (const [a, b, c] of LINES) {
-    const va = bd[a], vb = bd[b], vc = bd[c];
-    const x = (va === "X") + (vb === "X") + (vc === "X");
-    const o = (va === "O") + (vb === "O") + (vc === "O");
-    if (x && o) continue;
-    if (o === 2) score += 6;
-    else if (o === 1) score += 1;
-    else if (x === 2) score -= 6;
-    else if (x === 1) score -= 1;
-  }
-  return score;
-}
-
-const SEARCH_ABORT = Symbol("abort");
-let searchDeadline = Infinity;
-let searchNodes = 0;
-
-function search(bd, player, depth, alpha, beta) {
-  if ((++searchNodes & 1023) === 0 && Date.now() > searchDeadline) throw SEARCH_ABORT;
-
-  const result = winnerOf(bd);
-  if (result) {
-    const winScore = 1000 + depth;
-    return { index: null, score: result.player === "O" ? winScore : -winScore };
-  }
-
-  if (depth === 0) {
-    return { index: null, score: player === "O" ? evaluate(bd) : -evaluate(bd) };
-  }
-
-  let bestIndex = null;
-  const maximizing = player === "O";
-
-  for (const i of MOVE_ORDER) {
-    if (bd[i] !== null) continue;
-    bd[i] = player;
-    const { score } = search(bd, maximizing ? "X" : "O", depth - 1, alpha, beta);
-    bd[i] = null;
-
-    if (bestIndex === null) bestIndex = i;
-
-    if (maximizing) {
-      if (score > alpha) { alpha = score; bestIndex = i; }
-    } else {
-      if (score < beta) { beta = score; bestIndex = i; }
-    }
-
-    if (alpha >= beta) break;
-  }
-
-  if (bestIndex === null) return { index: null, score: 0 };
-
-  return { index: bestIndex, score: maximizing ? alpha : beta };
-}
-
 function setMode(newMode) {
   mode = newMode;
   document.getElementById("mode-pvp").classList.toggle("active", mode === "pvp");
@@ -288,6 +310,12 @@ document.querySelectorAll(".level").forEach(btn => {
 });
 
 resetBtn.addEventListener("click", init);
+
+viewToggleBtn.addEventListener("click", () => {
+  flatView = !flatView;
+  viewToggleBtn.textContent = flatView ? "Vue 3D" : "Vue à plat";
+  render();
+});
 
 mode = "pvp";
 level = "easy";
