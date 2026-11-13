@@ -1,16 +1,22 @@
 const LINES = [];
 
+const DIRS = [];
+for (let dx = -1; dx <= 1; dx++)
+  for (let dy = -1; dy <= 1; dy++)
+    for (let dz = -1; dz <= 1; dz++) {
+      if (!dx && !dy && !dz) continue;
+      if (dx > 0 || (dx === 0 && dy > 0) || (dx === 0 && dy === 0 && dz > 0))
+        DIRS.push([dx, dy, dz]);
+    }
+
 for (let z = 0; z < 3; z++)
   for (let y = 0; y < 3; y++)
-    LINES.push([z * 9 + y * 3, z * 9 + y * 3 + 1, z * 9 + y * 3 + 2]);
-
-for (let z = 0; z < 3; z++)
-  for (let x = 0; x < 3; x++)
-    LINES.push([z * 9 + x, z * 9 + 3 + x, z * 9 + 6 + x]);
-
-for (let y = 0; y < 3; y++)
-  for (let x = 0; x < 3; x++)
-    LINES.push([y * 3 + x, 9 + y * 3 + x, 18 + y * 3 + x]);
+    for (let x = 0; x < 3; x++)
+      for (const [dx, dy, dz] of DIRS) {
+        const ex = x + 2 * dx, ey = y + 2 * dy, ez = z + 2 * dz;
+        if (ex < 0 || ex > 2 || ey < 0 || ey > 2 || ez < 0 || ez > 2) continue;
+        LINES.push([z * 9 + y * 3 + x, (z + dz) * 9 + (y + dy) * 3 + (x + dx), ez * 9 + ey * 3 + ex]);
+      }
 
 const MOVE_ORDER = Array.from({ length: 27 }, (_, i) => {
   const x = i % 3, y = Math.floor(i / 3) % 3, z = Math.floor(i / 9);
@@ -162,18 +168,45 @@ function chooseAIMove() {
   if (level === "easy" && Math.random() < 0.6) return randomMove(empty);
   if (level === "medium" && Math.random() < 0.3) return randomMove(empty);
 
-  const depth = level === "medium" ? 2 : searchDepth(empty.length);
-  return search(board, "O", depth, -Infinity, Infinity).index;
+  const win = immediateWin(board, "O");
+  if (win !== null) return win;
+  const block = immediateWin(board, "X");
+  if (block !== null) return block;
+
+  if (level === "medium") return search(board, "O", 2, -Infinity, Infinity).index;
+
+  let best = search(board, "O", 2, -Infinity, Infinity).index;
+  const snapshot = board.slice();
+  for (let depth = 3; depth <= empty.length; depth++) {
+    searchDeadline = Date.now() + 600;
+    searchNodes = 0;
+    try {
+      const result = search(board, "O", depth, -Infinity, Infinity);
+      best = result.index;
+      if (Math.abs(result.score) >= 1000) break;
+    } catch (e) {
+      if (e !== SEARCH_ABORT) throw e;
+      board.splice(0, board.length, ...snapshot);
+      break;
+    }
+  }
+  searchDeadline = Infinity;
+  return best;
 }
 
 function randomMove(empty) {
   return empty[Math.floor(Math.random() * empty.length)];
 }
 
-function searchDepth(empties) {
-  if (empties > 22) return 4;
-  if (empties > 14) return 6;
-  return empties;
+function immediateWin(bd, player) {
+  for (const i of MOVE_ORDER) {
+    if (bd[i] !== null) continue;
+    bd[i] = player;
+    const won = winnerOf(bd);
+    bd[i] = null;
+    if (won) return i;
+  }
+  return null;
 }
 
 function evaluate(bd) {
@@ -191,25 +224,33 @@ function evaluate(bd) {
   return score;
 }
 
+const SEARCH_ABORT = Symbol("abort");
+let searchDeadline = Infinity;
+let searchNodes = 0;
+
 function search(bd, player, depth, alpha, beta) {
+  if ((++searchNodes & 1023) === 0 && Date.now() > searchDeadline) throw SEARCH_ABORT;
+
   const result = winnerOf(bd);
   if (result) {
     const winScore = 1000 + depth;
     return { index: null, score: result.player === "O" ? winScore : -winScore };
   }
 
-  const empty = emptyCells(bd);
-  if (empty.length === 0 || depth === 0) {
+  if (depth === 0) {
     return { index: null, score: player === "O" ? evaluate(bd) : -evaluate(bd) };
   }
 
-  let bestIndex = empty[0];
+  let bestIndex = null;
   const maximizing = player === "O";
 
-  for (const i of empty) {
+  for (const i of MOVE_ORDER) {
+    if (bd[i] !== null) continue;
     bd[i] = player;
     const { score } = search(bd, maximizing ? "X" : "O", depth - 1, alpha, beta);
     bd[i] = null;
+
+    if (bestIndex === null) bestIndex = i;
 
     if (maximizing) {
       if (score > alpha) { alpha = score; bestIndex = i; }
@@ -219,6 +260,8 @@ function search(bd, player, depth, alpha, beta) {
 
     if (alpha >= beta) break;
   }
+
+  if (bestIndex === null) return { index: null, score: 0 };
 
   return { index: bestIndex, score: maximizing ? alpha : beta };
 }
