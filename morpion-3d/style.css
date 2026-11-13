@@ -1,6 +1,6 @@
 :root {
-  --bg: #14141f;
-  --panel: #1e1e30;
+  --bg: #262637;
+  --panel: #33334d;
   --accent: #e94560;
   --text: #eaeaea;
 }
@@ -130,7 +130,7 @@ button:hover { border-color: var(--accent); }
   position: absolute;
   inset: 0;
   transform: translateZ(calc((var(--z) - 1) * var(--depth)));
-  background: rgba(35, 35, 56, 0.18);
+  background: rgba(72, 72, 102, 0.18);
   border-radius: 8px;
   padding: var(--pad);
   transform-style: preserve-3d;
@@ -175,7 +175,7 @@ button:hover { border-color: var(--accent); }
 .cf.top {
   inset: 0;
   transform: translateZ(var(--ch));
-  background: rgba(38, 38, 64, 0.18);
+  background: rgba(72, 72, 105, 0.28);
 }
 
 .cf.north {
@@ -183,7 +183,7 @@ button:hover { border-color: var(--accent); }
   height: var(--ch);
   transform-origin: 50% 0;
   transform: rotateX(90deg);
-  background: rgba(27, 27, 45, 0.12);
+  background: rgba(45, 45, 70, 0.2);
 }
 
 .cf.south {
@@ -191,7 +191,7 @@ button:hover { border-color: var(--accent); }
   height: var(--ch);
   transform-origin: 50% 100%;
   transform: rotateX(-90deg);
-  background: rgba(50, 50, 80, 0.16);
+  background: rgba(85, 85, 120, 0.24);
 }
 
 .cf.west {
@@ -199,7 +199,7 @@ button:hover { border-color: var(--accent); }
   width: var(--ch);
   transform-origin: 0 50%;
   transform: rotateY(-90deg);
-  background: rgba(33, 33, 56, 0.14);
+  background: rgba(55, 55, 85, 0.22);
 }
 
 .cf.east {
@@ -207,7 +207,7 @@ button:hover { border-color: var(--accent); }
   width: var(--ch);
   transform-origin: 100% 50%;
   transform: rotateY(90deg);
-  background: rgba(42, 42, 70, 0.15);
+  background: rgba(65, 65, 98, 0.23);
 }
 
 .cellbox.x .cf.top { background: rgba(0, 217, 255, 0.4); }
@@ -222,17 +222,17 @@ button:hover { border-color: var(--accent); }
 .cellbox.o .cf.west { background: rgba(194, 67, 107, 0.4); }
 .cellbox.o .cf.east { background: rgba(122, 36, 66, 0.4); }
 
-.cellbox.win.x .cf.top { background: rgba(0, 217, 255, 0.65); }
-.cellbox.win.x .cf.north { background: rgba(6, 90, 115, 0.65); }
-.cellbox.win.x .cf.south { background: rgba(13, 158, 199, 0.65); }
-.cellbox.win.x .cf.west { background: rgba(8, 115, 145, 0.65); }
-.cellbox.win.x .cf.east { background: rgba(5, 75, 96, 0.65); }
+.cellbox.win.x .cf.top { background: rgba(0, 217, 255, 0.78); }
+.cellbox.win.x .cf.north { background: rgba(6, 90, 115, 0.78); }
+.cellbox.win.x .cf.south { background: rgba(13, 158, 199, 0.78); }
+.cellbox.win.x .cf.west { background: rgba(8, 115, 145, 0.78); }
+.cellbox.win.x .cf.east { background: rgba(5, 75, 96, 0.78); }
 
-.cellbox.win.o .cf.top { background: rgba(255, 107, 157, 0.65); }
-.cellbox.win.o .cf.north { background: rgba(143, 44, 80, 0.65); }
-.cellbox.win.o .cf.south { background: rgba(255, 130, 171, 0.65); }
-.cellbox.win.o .cf.west { background: rgba(194, 67, 107, 0.65); }
-.cellbox.win.o .cf.east { background: rgba(122, 36, 66, 0.65); }
+.cellbox.win.o .cf.top { background: rgba(255, 107, 157, 0.78); }
+.cellbox.win.o .cf.north { background: rgba(143, 44, 80, 0.78); }
+.cellbox.win.o .cf.south { background: rgba(255, 130, 171, 0.78); }
+.cellbox.win.o .cf.west { background: rgba(194, 67, 107, 0.78); }
+.cellbox.win.o .cf.east { background: rgba(122, 36, 66, 0.78); }
 
 .mark {
   position: absolute;
@@ -266,14 +266,14 @@ button:hover { border-color: var(--accent); }
 .cube.flat .cellcube { position: static; }
 
 .cube.flat .cellbox {
-  background: var(--cell, #262640);
+  background: var(--cell, #3c3c58);
   aspect-ratio: 1;
 }
 
 .cube.flat .cellbox:not(.taken):hover { background: #32325a; }
 
-.cube.flat .cellbox.win.x { background: rgba(0, 217, 255, 0.65); }
-.cube.flat .cellbox.win.o { background: rgba(255, 107, 157, 0.65); }
+.cube.flat .cellbox.win.x { background: rgba(0, 217, 255, 0.78); }
+.cube.flat .cellbox.win.o { background: rgba(255, 107, 157, 0.78); }
 
 .cube.flat .cf { display: none; }
 
