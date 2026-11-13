@@ -1,61 +1,72 @@
 :root {
   --bg: #14141f;
   --panel: #1e1e30;
-  --cell: #262640;
   --accent: #e94560;
-  --x-color: #00d9ff;
-  --o-color: #ff6b9d;
   --text: #eaeaea;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+html { height: 100%; }
+
 body {
   font-family: "Segoe UI", system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   user-select: none;
 }
 
-.container {
-  width: min(96vw, 560px);
-  padding: 28px 0;
-  text-align: center;
-  cursor: grab;
-}
-
 body.dragging, body.dragging * { cursor: grabbing !important; }
 
+.container {
+  --cube: min(52vmin, 32vh, 300px);
+  --pad: calc(var(--cube) * 0.03);
+  --gap: calc(var(--cube) * 0.02);
+  --cellw: calc((var(--cube) - 2 * var(--pad) - 2 * var(--gap)) / 3);
+  --ch: var(--cellw);
+  --depth: calc(var(--cellw) + var(--gap));
+  width: min(96vw, 560px);
+  height: 100%;
+  padding: 8px 0;
+  text-align: center;
+  cursor: grab;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 h1 {
-  font-size: 36px;
+  font-size: clamp(20px, 4.5vh, 30px);
   letter-spacing: 2px;
 }
 
 .subtitle {
-  font-size: 14px;
+  font-size: 12px;
   opacity: 0.6;
-  margin: 6px 0 20px;
+  margin: 2px 0 8px;
 }
 
 .mode-selector, .ai-options {
   display: flex;
   justify-content: center;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 button {
   font-family: inherit;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text);
   background: var(--panel);
   border: 2px solid transparent;
-  border-radius: 10px;
-  padding: 9px 16px;
+  border-radius: 8px;
+  padding: 6px 14px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -70,45 +81,36 @@ button:hover { border-color: var(--accent); }
 .hidden { display: none; }
 
 .status {
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 600;
-  margin: 14px 0;
-  min-height: 26px;
+  margin: 6px 0;
+  min-height: 22px;
 }
 
 .board {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 
 .scene {
   perspective: 1300px;
-  width: min(92vw, 500px);
-  height: min(92vw, 500px);
+  width: min(92vw, calc(var(--cube) * 1.55));
+  height: min(92vw, calc(var(--cube) * 1.55));
   display: flex;
   align-items: center;
   justify-content: center;
   touch-action: none;
-  cursor: grab;
 }
 
-.board:active .scene { cursor: grabbing; }
-
 .cube {
-  --cube: min(56vmin, 320px);
-  --pad: calc(var(--cube) * 0.03);
-  --gap: calc(var(--cube) * 0.02);
-  --cellw: calc((var(--cube) - 2 * var(--pad) - 2 * var(--gap)) / 3);
-  --ch: var(--cellw);
-  --depth: calc(var(--cellw) + var(--gap));
-  --rx: 55deg;
-  --rz: 45deg;
   position: relative;
   width: var(--cube);
   height: var(--cube);
   transform-style: preserve-3d;
   transform: rotateX(var(--rx)) rotateZ(var(--rz));
+  --rx: 55deg;
+  --rz: 45deg;
 }
 
 .cube.smooth { transition: transform 0.45s ease; }
@@ -118,7 +120,7 @@ button:hover { border-color: var(--accent); }
   height: auto;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .face {
@@ -146,9 +148,14 @@ button:hover { border-color: var(--accent); }
   position: relative;
   transform-style: preserve-3d;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 .cellbox.taken { cursor: default; }
+
+.cellbox:not(.taken):hover { background: rgba(58, 58, 104, 0.5); }
+
+.cellbox.last { box-shadow: 0 0 0 2px var(--accent); }
 
 .cellcube {
   position: absolute;
@@ -201,10 +208,6 @@ button:hover { border-color: var(--accent); }
   background: rgba(42, 42, 70, 0.15);
 }
 
-.cellbox:not(.taken):hover .cf.top {
-  background: rgba(58, 58, 104, 0.5);
-}
-
 .cellbox.x .cf.top { background: rgba(0, 217, 255, 0.4); }
 .cellbox.x .cf.north { background: rgba(6, 90, 115, 0.4); }
 .cellbox.x .cf.south { background: rgba(13, 158, 199, 0.4); }
@@ -216,8 +219,6 @@ button:hover { border-color: var(--accent); }
 .cellbox.o .cf.south { background: rgba(255, 130, 171, 0.4); }
 .cellbox.o .cf.west { background: rgba(194, 67, 107, 0.4); }
 .cellbox.o .cf.east { background: rgba(122, 36, 66, 0.4); }
-
-.cellbox.last .cf.top { box-shadow: 0 0 0 2px var(--accent); }
 
 .cellbox.win .cf.top {
   background: rgba(233, 69, 96, 0.55) !important;
@@ -233,17 +234,23 @@ button:hover { border-color: var(--accent); }
   position: absolute;
   left: 50%;
   top: 50%;
-  font-weight: 800;
-  font-size: calc(var(--cube) * 0.12);
+  width: calc(var(--cube) * 0.17);
+  height: calc(var(--cube) * 0.17);
   color: #ffffff;
-  text-shadow: 0 0 4px rgba(0, 0, 0, 0.9), 0 1px 2px rgba(0, 0, 0, 0.8);
   transform: translate(-50%, -50%) translateZ(calc(var(--ch) / 2)) rotateZ(calc(-1 * var(--rz))) rotateX(calc(-1 * var(--rx)));
   pointer-events: none;
 }
 
+.mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
+}
+
 .face-label {
   position: absolute;
-  top: calc(var(--cube) * -0.1);
+  top: calc(var(--cube) * -0.09);
   left: 2px;
   font-size: calc(var(--cube) * 0.048);
   font-weight: 700;
@@ -269,8 +276,7 @@ button:hover { border-color: var(--accent); }
 .cube.flat .cellcube { position: static; }
 
 .cube.flat .cellbox {
-  background: var(--cell);
-  border-radius: 6px;
+  background: var(--cell, #262640);
   aspect-ratio: 1;
 }
 
@@ -286,7 +292,7 @@ button:hover { border-color: var(--accent); }
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-size: calc(var(--cube) * 0.12);
+  padding: 20%;
 }
 
 .cube.flat .face-label {
@@ -300,21 +306,21 @@ button:hover { border-color: var(--accent); }
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 18px;
+  margin-bottom: 10px;
 }
 
 .score-box {
   background: var(--panel);
-  border-radius: 10px;
-  padding: 8px 18px;
+  border-radius: 8px;
+  padding: 5px 14px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  min-width: 72px;
+  gap: 1px;
+  min-width: 64px;
 }
 
-.score-box span { font-size: 12px; opacity: 0.7; }
-.score-box b { font-size: 20px; }
+.score-box span { font-size: 11px; opacity: 0.7; }
+.score-box b { font-size: 17px; }
 
 .actions {
   display: flex;

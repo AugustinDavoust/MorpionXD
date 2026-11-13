@@ -40,6 +40,11 @@ let lastMoveIndex = null;
 
 const LAYER_NAMES = ["Étage 1 · bas", "Étage 2 · milieu", "Étage 3 · haut"];
 
+const MARK_SVGS = {
+  X: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"><line x1="24" y1="24" x2="76" y2="76"/><line x1="76" y1="24" x2="24" y2="76"/></svg>',
+  O: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="13"><circle cx="50" cy="50" r="27"/></svg>',
+};
+
 let rx = 55, rz = 45;
 let currentCube = null;
 
@@ -126,7 +131,7 @@ function buildCell(i) {
 
   const mark = document.createElement("span");
   mark.className = "mark";
-  mark.textContent = value === "X" ? "✕" : value === "O" ? "◯" : "";
+  if (value) mark.innerHTML = MARK_SVGS[value];
   cubeEl.appendChild(mark);
 
   box.appendChild(cubeEl);
