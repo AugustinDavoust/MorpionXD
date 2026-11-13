@@ -108,7 +108,7 @@ button:hover { border-color: var(--accent); }
   width: var(--cube);
   height: var(--cube);
   transform-style: preserve-3d;
-  transform: rotateX(var(--rx)) rotateZ(var(--rz)) scale(var(--zoom));
+  transform: rotateX(var(--rx)) rotateZ(var(--rz)) scale3d(var(--zoom), var(--zoom), var(--zoom));
   --rx: 55deg;
   --rz: 45deg;
   --zoom: 1;
@@ -130,8 +130,6 @@ button:hover { border-color: var(--accent); }
   position: absolute;
   inset: 0;
   transform: translateZ(calc((var(--z) - 1) * var(--depth)));
-  background: rgba(96, 96, 130, 0.18);
-  border-radius: 8px;
   padding: var(--pad);
   transform-style: preserve-3d;
 }
