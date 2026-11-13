@@ -118,6 +118,8 @@ button:hover { border-color: var(--accent); }
 .cube.flat {
   transform: none;
   height: auto;
+  width: calc(var(--cube) * 0.4);
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -220,15 +222,17 @@ button:hover { border-color: var(--accent); }
 .cellbox.o .cf.west { background: rgba(194, 67, 107, 0.4); }
 .cellbox.o .cf.east { background: rgba(122, 36, 66, 0.4); }
 
-.cellbox.win .cf.top {
-  background: rgba(233, 69, 96, 0.55) !important;
-  animation: pulse 0.6s ease infinite alternate;
-}
+.cellbox.win.x .cf.top { background: #00d9ff; }
+.cellbox.win.x .cf.north { background: #065a73; }
+.cellbox.win.x .cf.south { background: #0d9ec7; }
+.cellbox.win.x .cf.west { background: #087391; }
+.cellbox.win.x .cf.east { background: #054b60; }
 
-@keyframes pulse {
-  from { scale: 1; }
-  to   { scale: 1.08; }
-}
+.cellbox.win.o .cf.top { background: #ff6b9d; }
+.cellbox.win.o .cf.north { background: #8f2c50; }
+.cellbox.win.o .cf.south { background: #ff82ab; }
+.cellbox.win.o .cf.west { background: #c2436b; }
+.cellbox.win.o .cf.east { background: #7a2442; }
 
 .mark {
   position: absolute;
@@ -282,6 +286,9 @@ button:hover { border-color: var(--accent); }
 
 .cube.flat .cellbox:not(.taken):hover { background: #32325a; }
 
+.cube.flat .cellbox.win.x { background: #00d9ff; }
+.cube.flat .cellbox.win.o { background: #ff6b9d; }
+
 .cube.flat .cf { display: none; }
 
 .cube.flat .mark {
@@ -299,7 +306,8 @@ button:hover { border-color: var(--accent); }
   position: static;
   transform: none;
   display: block;
-  margin-bottom: 4px;
+  font-size: 10px;
+  margin-bottom: 2px;
 }
 
 .scores {
