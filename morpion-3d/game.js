@@ -38,20 +38,20 @@ let board, current, playing, mode, level, scores, aiThinking;
 let flatView = false;
 let lastMoveIndex = null;
 
-const LAYER_NAMES = ["Étage 1 · bas", "Étage 2 · milieu", "Étage 3 · haut"];
-
 const MARK_SVGS = {
   X: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"><line x1="24" y1="24" x2="76" y2="76"/><line x1="76" y1="24" x2="24" y2="76"/></svg>',
   O: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="13"><circle cx="50" cy="50" r="27"/></svg>',
 };
 
 let rx = 55, rz = 45;
+let zoom = 1;
 let currentCube = null;
 
 function applyCamera() {
   if (!currentCube) return;
   currentCube.style.setProperty("--rx", rx + "deg");
   currentCube.style.setProperty("--rz", rz + "deg");
+  currentCube.style.setProperty("--zoom", zoom);
 }
 
 function init() {
@@ -88,11 +88,6 @@ function render() {
     const face = document.createElement("div");
     face.className = "face";
     face.style.setProperty("--z", z);
-
-    const label = document.createElement("div");
-    label.className = "face-label";
-    label.textContent = LAYER_NAMES[z];
-    face.appendChild(label);
 
     const grid = document.createElement("div");
     grid.className = "face-grid";
@@ -410,6 +405,13 @@ document.body.addEventListener("touchend", () => {
   if (dragging && dragDist > 6) suppressClick = true;
   dragging = false;
 }, { passive: true });
+
+document.body.addEventListener("wheel", (e) => {
+  if (flatView) return;
+  e.preventDefault();
+  zoom = Math.min(2.2, Math.max(0.5, zoom * (e.deltaY < 0 ? 1.1 : 1 / 1.1)));
+  applyCamera();
+}, { passive: false });
 
 mode = "pvp";
 level = "easy";
