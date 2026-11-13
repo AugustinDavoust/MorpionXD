@@ -224,7 +224,7 @@ button:hover { border-color: var(--accent); }
 
 .cellbox:not(.taken):hover { background: rgba(58, 58, 104, 0.85); }
 
-.cellbox:not(.taken):hover .cf { background: rgba(255, 255, 255, 0.16); }
+.cellbox:not(.taken):hover .cf { filter: brightness(1.4); }
 
 .cellbox.last { box-shadow: 0 0 0 2px var(--accent); }
 
@@ -244,7 +244,7 @@ button:hover { border-color: var(--accent); }
 .cf.top {
   inset: 0;
   transform: translateZ(var(--ch));
-  background: transparent;
+  background: rgba(96, 96, 132, 0.28);
 }
 
 .cf.north {
@@ -252,7 +252,7 @@ button:hover { border-color: var(--accent); }
   height: var(--ch);
   transform-origin: 50% 0;
   transform: rotateX(90deg);
-  background: transparent;
+  background: rgba(64, 64, 94, 0.2);
 }
 
 .cf.south {
@@ -260,7 +260,7 @@ button:hover { border-color: var(--accent); }
   height: var(--ch);
   transform-origin: 50% 100%;
   transform: rotateX(-90deg);
-  background: transparent;
+  background: rgba(112, 112, 148, 0.24);
 }
 
 .cf.west {
@@ -268,7 +268,7 @@ button:hover { border-color: var(--accent); }
   width: var(--ch);
   transform-origin: 0 50%;
   transform: rotateY(-90deg);
-  background: transparent;
+  background: rgba(76, 76, 110, 0.22);
 }
 
 .cf.east {
@@ -276,7 +276,7 @@ button:hover { border-color: var(--accent); }
   width: var(--ch);
   transform-origin: 100% 50%;
   transform: rotateY(90deg);
-  background: transparent;
+  background: rgba(88, 88, 122, 0.23);
 }
 
 .cellbox.x .cf.top,
