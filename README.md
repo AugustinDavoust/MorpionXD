@@ -10,9 +10,16 @@ Fusionne les tuiles pour atteindre 2048.
 - Score et record sauvegardés (localStorage)
 
 ### Morpion (`morpion/`)
-Tic-tac-toe avec deux modes :
+Tic-tac-toe classique avec deux modes :
 - **2 joueurs** sur le même écran
 - **Contre l'IA** avec 3 niveaux : facile (aléatoire), moyen, difficile (minimax, imbattable)
+
+### Morpion 3D (`morpion-3d/`)
+La même règle en 3×3×3 : 27 cases réparties sur 3 étages, victoire si 3 pions
+sont alignés sur l'un des 3 axes (lignes, colonnes ou piliers verticaux).
+- **2 joueurs** sur le même écran
+- **Contre l'IA** avec 3 niveaux : facile, moyen, difficile
+  (élagage alpha-bêta avec profondeur adaptative et heuristique sur les lignes)
 
 ## Lancer un jeu
 

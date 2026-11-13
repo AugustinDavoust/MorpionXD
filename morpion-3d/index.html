@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Morpion 3D</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>Morpion 3D</h1>
+    <p class="subtitle">Grille 3×3×3 — aligne 3 pions sur l'un des 3 axes</p>
+
+    <div class="mode-selector">
+      <button id="mode-pvp" class="mode active">2 joueurs</button>
+      <button id="mode-ai" class="mode">Contre l'IA</button>
+    </div>
+
+    <div id="ai-options" class="ai-options hidden">
+      <button class="level active" data-level="easy">Facile</button>
+      <button class="level" data-level="medium">Moyen</button>
+      <button class="level" data-level="hard">Difficile</button>
+    </div>
+
+    <p id="status" class="status">Au tour de ✕</p>
+
+    <div id="board" class="board"></div>
+
+    <div class="scores">
+      <div class="score-box"><span>✕</span><b id="score-x">0</b></div>
+      <div class="score-box"><span>Nuls</span><b id="score-draw">0</b></div>
+      <div class="score-box"><span>◯</span><b id="score-o">0</b></div>
+    </div>
+
+    <button id="reset">Recommencer</button>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
