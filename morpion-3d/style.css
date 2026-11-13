@@ -88,10 +88,32 @@ button:hover { border-color: var(--accent); }
 }
 
 .board {
+  position: relative;
   display: flex;
   justify-content: center;
   margin-bottom: 8px;
 }
+
+.banner {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  font-size: clamp(30px, 7vh, 52px);
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #ffffff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.banner.show { opacity: 1; }
+.banner.x { color: #00d9ff; }
+.banner.o { color: #ff6b9d; }
 
 .scene {
   perspective: 1300px;
@@ -153,7 +175,9 @@ button:hover { border-color: var(--accent); }
 
 .cellbox.taken { cursor: default; }
 
-.cellbox:not(.taken):hover { background: rgba(58, 58, 104, 0.5); }
+.cellbox:not(.taken):hover { background: rgba(58, 58, 104, 0.85); }
+
+.cellbox:not(.taken):hover .cf { filter: brightness(1.4); }
 
 .cellbox.last { box-shadow: 0 0 0 2px var(--accent); }
 

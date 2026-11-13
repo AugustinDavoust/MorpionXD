@@ -37,6 +37,8 @@ const viewToggleBtn = document.getElementById("view-toggle");
 let board, current, playing, mode, level, scores, aiThinking;
 let flatView = false;
 let lastMoveIndex = null;
+let bannerEl = null;
+let endMessage = null;
 
 const MARK_SVGS = {
   X: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"><line x1="24" y1="24" x2="76" y2="76"/><line x1="76" y1="24" x2="24" y2="76"/></svg>',
@@ -60,6 +62,7 @@ function init() {
   playing = true;
   aiThinking = false;
   lastMoveIndex = null;
+  endMessage = null;
   render();
   updateStatus();
 }
@@ -105,6 +108,14 @@ function render() {
   scene.appendChild(cube);
   boardEl.appendChild(scene);
 
+  bannerEl = document.createElement("div");
+  bannerEl.className = "banner";
+  if (endMessage && !playing) {
+    bannerEl.textContent = endMessage.text;
+    bannerEl.className = "banner show" + (endMessage.cls ? " " + endMessage.cls : "");
+  }
+  boardEl.appendChild(bannerEl);
+
   currentCube = cube;
   applyCamera();
 }
@@ -140,6 +151,13 @@ function updateStatus(text) {
     return;
   }
   statusEl.textContent = `Au tour de ${current === "X" ? "✕" : "◯"}`;
+}
+
+function showBanner(text, cls) {
+  endMessage = { text, cls };
+  if (!bannerEl) return;
+  bannerEl.textContent = text;
+  bannerEl.className = "banner show" + (cls ? " " + cls : "");
 }
 
 function winnerOf(bd) {
@@ -187,9 +205,11 @@ function endRound(result) {
     result.line.forEach(i => boardEl.querySelector(`[data-index="${i}"]`).classList.add("win"));
     scores[result.player]++;
     updateStatus(`${result.player === "X" ? "✕" : "◯"} a gagné ! 🎉`);
+    showBanner(`${result.player === "X" ? "✕" : "◯"} a gagné !`, result.player.toLowerCase());
   } else {
     scores.draw++;
     updateStatus("Match nul 🤝");
+    showBanner("Match nul", "");
   }
   updateScores();
 }
