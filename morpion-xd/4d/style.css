@@ -182,7 +182,7 @@ button:hover { border-color: var(--accent); }
 /* ===== Vues 3D (3 cubes côte à côte) et 4D (éclatée) ===== */
 
 .board.triple,
-.board.exploded {
+.board.tesseract {
   flex-wrap: nowrap;
   align-items: center;
   gap: 10px;
@@ -190,16 +190,16 @@ button:hover { border-color: var(--accent); }
 }
 
 .board.triple { --cube: min(24vmin, 19vh, 160px); }
-.board.exploded { --cube: min(20vmin, 15vh, 120px); }
+.board.tesseract { --cube: min(34vmin, 24vh, 200px); }
 
 .board.triple .scene {
   width: calc(var(--cube) * 1.35);
   height: calc(var(--cube) * 1.35);
 }
 
-.board.exploded .scene {
-  width: calc(var(--cube) * 1.7);
-  height: calc(var(--cube) * 2.8);
+.board.tesseract .scene {
+  width: calc(var(--cube) * 1.6);
+  height: calc(var(--cube) * 1.6);
 }
 
 .scene {
@@ -232,7 +232,7 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 .sub {
   position: absolute;
   inset: 0;
-  transform: translateZ(calc((var(--w) - 1) * (3 * var(--cellw) + 4 * var(--gap))));
+  transform: scale3d(var(--s), var(--s), var(--s));
   transform-style: preserve-3d;
 }
 

@@ -74,10 +74,10 @@ function updateScores() {
 function render() {
   boardEl.innerHTML = "";
   boardEl.classList.toggle("triple", viewMode === "3d");
-  boardEl.classList.toggle("exploded", viewMode === "4d");
+  boardEl.classList.toggle("tesseract", viewMode === "4d");
   if (viewMode === "flat") renderFlat();
   else if (viewMode === "3d") renderTriple();
-  else renderExploded();
+  else renderTesseract();
   applyCamera();
 }
 
@@ -191,7 +191,8 @@ function renderTriple() {
   }
 }
 
-function renderExploded() {
+function renderTesseract() {
+  const scales = [1, 0.62, 0.42];
   const scene = document.createElement("div");
   scene.className = "scene";
   const cube = document.createElement("div");
@@ -199,7 +200,7 @@ function renderExploded() {
   for (let w = 0; w < 3; w++) {
     const sub = document.createElement("div");
     sub.className = "sub";
-    sub.style.setProperty("--w", w);
+    sub.style.setProperty("--s", scales[w]);
     buildCubeContent(sub, w);
     cube.appendChild(sub);
   }
