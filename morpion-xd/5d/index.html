@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Morpion 5D</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <a class="back" href="../index.html">← Menu</a>
+    <h1>Morpion 5D</h1>
+    <p class="subtitle">Penteracte 3×3×3×3×3 — 243 cases, 1441 lignes gagnantes</p>
+
+    <div class="view-selector">
+      <button id="view-flat" class="view active">Vue à plat</button>
+      <button id="view-3d" class="view">Vue 3D</button>
+      <button id="view-4d" class="view">Vue 4D</button>
+    </div>
+
+    <p id="status" class="status">Au tour de ✕</p>
+
+    <div id="board" class="board"></div>
+
+    <div class="scores">
+      <div class="score-box"><span>✕</span><b id="score-x">0</b></div>
+      <div class="score-box"><span>Nuls</span><b id="score-draw">0</b></div>
+      <div class="score-box"><span>◯</span><b id="score-o">0</b></div>
+    </div>
+
+    <button id="reset">Recommencer</button>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
