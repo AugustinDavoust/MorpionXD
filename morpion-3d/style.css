@@ -111,7 +111,7 @@ button:hover { border-color: var(--accent); }
   transition: opacity 0.35s ease;
 }
 
-.banner.show { opacity: 1; }
+.banner.show { opacity: 0.85; }
 .banner.x { color: #00d9ff; }
 .banner.o { color: #ff6b9d; }
 
