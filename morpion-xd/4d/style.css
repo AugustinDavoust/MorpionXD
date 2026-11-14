@@ -167,3 +167,242 @@ button:hover { border-color: var(--accent); }
 }
 
 .back:hover { opacity: 1; }
+
+/* ===== Sélecteur de vue ===== */
+
+.view-selector {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.view.active { background: var(--accent); color: white; }
+
+/* ===== Vues 3D (3 cubes côte à côte) et 4D (éclatée) ===== */
+
+.board.triple,
+.board.exploded {
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.board.triple { --cube: min(24vmin, 19vh, 160px); }
+.board.exploded { --cube: min(20vmin, 15vh, 120px); }
+
+.board.triple .scene {
+  width: calc(var(--cube) * 1.35);
+  height: calc(var(--cube) * 1.35);
+}
+
+.board.exploded .scene {
+  width: calc(var(--cube) * 1.7);
+  height: calc(var(--cube) * 2.8);
+}
+
+.scene {
+  perspective: 1300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+
+.cube {
+  position: relative;
+  width: var(--cube);
+  height: var(--cube);
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateZ(var(--rz)) scale3d(var(--zoom), var(--zoom), var(--zoom));
+  --rx: 55deg;
+  --rz: 45deg;
+  --zoom: 1;
+  --pad: calc(var(--cube) * 0.03);
+  --gap: calc(var(--cube) * 0.02);
+  --cellw: calc((var(--cube) - 2 * var(--pad) - 2 * var(--gap)) / 3);
+  --ch: var(--cellw);
+  --depth: calc(var(--cellw) + var(--gap));
+  cursor: grab;
+}
+
+body.dragging, body.dragging * { cursor: grabbing !important; }
+
+.sub {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(calc((var(--w) - 1) * (3 * var(--cellw) + 4 * var(--gap))));
+  transform-style: preserve-3d;
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(calc((var(--z) - 1) * var(--depth)));
+  padding: var(--pad);
+  transform-style: preserve-3d;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7));
+  background-repeat: no-repeat;
+  background-size:
+    2px calc(100% - 2 * var(--pad)),
+    2px calc(100% - 2 * var(--pad)),
+    calc(100% - 2 * var(--pad)) 2px,
+    calc(100% - 2 * var(--pad)) 2px;
+  background-position:
+    calc(var(--pad) + (100% - 2 * var(--pad) - 2 * var(--gap)) / 3 + var(--gap) / 2) var(--pad),
+    calc(var(--pad) + 2 * (100% - 2 * var(--pad) - 2 * var(--gap)) / 3 + 3 * var(--gap) / 2) var(--pad),
+    var(--pad) calc(var(--pad) + (100% - 2 * var(--pad) - 2 * var(--gap)) / 3 + var(--gap) / 2),
+    var(--pad) calc(var(--pad) + 2 * (100% - 2 * var(--pad) - 2 * var(--gap)) / 3 + 3 * var(--gap) / 2);
+}
+
+.face.bottom { background-image: none; }
+
+.face-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: var(--gap);
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.cellbox {
+  position: relative;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.cellbox.taken { cursor: default; }
+
+.cellbox:not(.taken):hover { background: rgba(58, 58, 104, 0.85); }
+
+.cellbox:not(.taken):hover .cf { background: rgba(255, 255, 255, 0.16); }
+
+.cellbox.last { box-shadow: 0 0 0 2px var(--accent); }
+
+.cellcube {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.cf {
+  position: absolute;
+  border-radius: 3px;
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+
+.cf.top {
+  inset: 0;
+  transform: translateZ(var(--ch));
+  background: rgba(96, 96, 132, 0.28);
+}
+
+.cf.north {
+  top: 0; left: 0; right: 0;
+  height: var(--ch);
+  transform-origin: 50% 0;
+  transform: rotateX(90deg);
+  background: rgba(64, 64, 94, 0.2);
+}
+
+.cf.south {
+  bottom: 0; left: 0; right: 0;
+  height: var(--ch);
+  transform-origin: 50% 100%;
+  transform: rotateX(-90deg);
+  background: rgba(112, 112, 148, 0.24);
+}
+
+.cf.west {
+  top: 0; bottom: 0; left: 0;
+  width: var(--ch);
+  transform-origin: 0 50%;
+  transform: rotateY(-90deg);
+  background: rgba(76, 76, 110, 0.22);
+}
+
+.cf.east {
+  top: 0; bottom: 0; right: 0;
+  width: var(--ch);
+  transform-origin: 100% 50%;
+  transform: rotateY(90deg);
+  background: rgba(88, 88, 122, 0.23);
+}
+
+.cellbox.x .cf.top,
+.cellbox.x .cf.north,
+.cellbox.x .cf.south,
+.cellbox.x .cf.west,
+.cellbox.x .cf.east { background: rgba(0, 217, 255, 0.4); }
+
+.cellbox.o .cf.top,
+.cellbox.o .cf.north,
+.cellbox.o .cf.south,
+.cellbox.o .cf.west,
+.cellbox.o .cf.east { background: rgba(255, 107, 157, 0.4); }
+
+.cellbox.win.x .cf.top,
+.cellbox.win.x .cf.north,
+.cellbox.win.x .cf.south,
+.cellbox.win.x .cf.west,
+.cellbox.win.x .cf.east { background: rgba(0, 217, 255, 0.88); }
+
+.cellbox.win.o .cf.top,
+.cellbox.win.o .cf.north,
+.cellbox.win.o .cf.south,
+.cellbox.win.o .cf.west,
+.cellbox.win.o .cf.east { background: rgba(255, 107, 157, 0.88); }
+
+.mark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--cube) * 0.21);
+  height: calc(var(--cube) * 0.21);
+  color: #ffffff;
+  transform: translate(-50%, -50%) translateZ(calc(var(--ch) / 2)) rotateZ(calc(-1 * var(--rz))) rotateX(calc(-1 * var(--rx)));
+  pointer-events: none;
+}
+
+.mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
+}
+
+.vline {
+  position: absolute;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  --vh: calc(3 * var(--cellw) + 2 * var(--gap));
+}
+
+.vline i {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: 2px;
+  height: var(--vh);
+  transform-origin: 50% 0;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.vline i.a { transform: translateZ(calc(-1 * var(--depth))) rotateX(90deg); }
+.vline i.b { transform: translateZ(calc(-1 * var(--depth))) rotateY(90deg) rotateZ(90deg); }
+
+.vline.p1 { left: calc(var(--pad) + var(--cellw) + var(--gap) / 2); top: calc(var(--pad) + var(--cellw) + var(--gap) / 2); }
+.vline.p2 { left: calc(var(--pad) + var(--cellw) + var(--gap) / 2); top: calc(var(--pad) + 2 * var(--cellw) + 3 * var(--gap) / 2); }
+.vline.p3 { left: calc(var(--pad) + 2 * var(--cellw) + 3 * var(--gap) / 2); top: calc(var(--pad) + var(--cellw) + var(--gap) / 2); }
+.vline.p4 { left: calc(var(--pad) + 2 * var(--cellw) + 3 * var(--gap) / 2); top: calc(var(--pad) + 2 * var(--cellw) + 3 * var(--gap) / 2); }

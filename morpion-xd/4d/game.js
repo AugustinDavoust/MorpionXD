@@ -31,13 +31,31 @@ const scoreOEl = document.getElementById("score-o");
 const scoreDrawEl = document.getElementById("score-draw");
 const resetBtn = document.getElementById("reset");
 
+const MARK_SVGS = {
+  X: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"><line x1="24" y1="24" x2="76" y2="76"/><line x1="76" y1="24" x2="24" y2="76"/></svg>',
+  O: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="13"><circle cx="50" cy="50" r="27"/></svg>',
+};
+
 let board, current, playing, scores, lastMove;
+let viewMode = "flat";
+let winLine = null;
+let rx = 55, rz = 45;
+let zoom = 1;
+
+function applyCamera() {
+  document.querySelectorAll("#board .cube").forEach(c => {
+    c.style.setProperty("--rx", rx + "deg");
+    c.style.setProperty("--rz", rz + "deg");
+    c.style.setProperty("--zoom", zoom);
+  });
+}
 
 function init() {
   board = Array(CELLS).fill(null);
   current = "X";
   playing = true;
   lastMove = null;
+  winLine = null;
   render();
   updateStatus();
 }
@@ -55,6 +73,15 @@ function updateScores() {
 
 function render() {
   boardEl.innerHTML = "";
+  boardEl.classList.toggle("triple", viewMode === "3d");
+  boardEl.classList.toggle("exploded", viewMode === "4d");
+  if (viewMode === "flat") renderFlat();
+  else if (viewMode === "3d") renderTriple();
+  else renderExploded();
+  applyCamera();
+}
+
+function renderFlat() {
   const hyperNames = ["Hyperplan 1 · w=0", "Hyperplan 2 · w=1", "Hyperplan 3 · w=2"];
   const layerNames = ["Étage 3 · z=2", "Étage 2 · z=1", "Étage 1 · z=0"];
 
@@ -79,7 +106,7 @@ function render() {
           const i = indexOf(x, y, z, w);
           const value = board[i];
           const cell = document.createElement("div");
-          cell.className = "cell" + (value ? ` taken ${value.toLowerCase()}` : "") + (i === lastMove ? " last" : "");
+          cell.className = "cell" + (value ? ` taken ${value.toLowerCase()}` : "") + (i === lastMove ? " last" : "") + (winLine && winLine.includes(i) ? " win" : "");
           cell.dataset.index = i;
           cell.textContent = value === "X" ? "✕" : value === "O" ? "◯" : "";
           cell.addEventListener("click", () => playCell(i));
@@ -98,6 +125,86 @@ function render() {
 
     boardEl.appendChild(hyper);
   }
+}
+
+function buildCubeContent(container, w) {
+  for (let z = 0; z < 3; z++) {
+    const face = document.createElement("div");
+    face.className = "face" + (z === 0 ? " bottom" : "");
+    face.style.setProperty("--z", z);
+
+    const grid = document.createElement("div");
+    grid.className = "face-grid";
+
+    for (let y = 0; y < 3; y++) {
+      for (let x = 0; x < 3; x++) {
+        grid.appendChild(buildCell3D(indexOf(x, y, z, w)));
+      }
+    }
+
+    face.appendChild(grid);
+    container.appendChild(face);
+  }
+
+  for (const p of ["p1", "p2", "p3", "p4"]) {
+    const vline = document.createElement("div");
+    vline.className = `vline ${p}`;
+    vline.innerHTML = '<i class="a"></i><i class="b"></i>';
+    container.appendChild(vline);
+  }
+}
+
+function buildCell3D(i) {
+  const value = board[i];
+  const box = document.createElement("div");
+  box.className = "cellbox" + (value ? ` taken ${value.toLowerCase()}` : "") + (i === lastMove ? " last" : "") + (winLine && winLine.includes(i) ? " win" : "");
+  box.dataset.index = i;
+
+  const cubeEl = document.createElement("div");
+  cubeEl.className = "cellcube";
+
+  for (const f of ["top", "north", "south", "west", "east"]) {
+    const side = document.createElement("div");
+    side.className = `cf ${f}`;
+    cubeEl.appendChild(side);
+  }
+
+  const mark = document.createElement("span");
+  mark.className = "mark";
+  if (value) mark.innerHTML = MARK_SVGS[value];
+  cubeEl.appendChild(mark);
+
+  box.appendChild(cubeEl);
+  box.addEventListener("click", () => playCell(i));
+  return box;
+}
+
+function renderTriple() {
+  for (let w = 0; w < 3; w++) {
+    const scene = document.createElement("div");
+    scene.className = "scene";
+    const cube = document.createElement("div");
+    cube.className = "cube";
+    buildCubeContent(cube, w);
+    scene.appendChild(cube);
+    boardEl.appendChild(scene);
+  }
+}
+
+function renderExploded() {
+  const scene = document.createElement("div");
+  scene.className = "scene";
+  const cube = document.createElement("div");
+  cube.className = "cube";
+  for (let w = 0; w < 3; w++) {
+    const sub = document.createElement("div");
+    sub.className = "sub";
+    sub.style.setProperty("--w", w);
+    buildCubeContent(sub, w);
+    cube.appendChild(sub);
+  }
+  scene.appendChild(cube);
+  boardEl.appendChild(scene);
 }
 
 function updateStatus(text) {
@@ -135,6 +242,7 @@ function playCell(i) {
 
 function endRound(result) {
   playing = false;
+  winLine = result ? result.line : null;
   if (result) {
     result.line.forEach(i => boardEl.querySelector(`[data-index="${i}"]`).classList.add("win"));
     scores[result.player]++;
@@ -146,7 +254,89 @@ function endRound(result) {
   updateScores();
 }
 
+function setView(v) {
+  viewMode = v;
+  document.querySelectorAll(".view").forEach(b => b.classList.toggle("active", b.id === "view-" + v));
+  zoom = 1;
+  render();
+}
+
+document.getElementById("view-flat").addEventListener("click", () => setView("flat"));
+document.getElementById("view-3d").addEventListener("click", () => setView("3d"));
+document.getElementById("view-4d").addEventListener("click", () => setView("4d"));
+
 resetBtn.addEventListener("click", init);
+
+let dragging = false;
+let dragDist = 0;
+let lastX = 0, lastY = 0;
+let suppressClick = false;
+
+function dragMove(x, y) {
+  const dx = x - lastX, dy = y - lastY;
+  dragDist += Math.abs(dx) + Math.abs(dy);
+  lastX = x;
+  lastY = y;
+  rz -= dx * 0.4;
+  rx = Math.min(85, Math.max(8, rx - dy * 0.4));
+  applyCamera();
+}
+
+document.body.addEventListener("mousedown", (e) => {
+  if (viewMode === "flat") return;
+  if (e.target.closest("button")) return;
+  dragging = true;
+  dragDist = 0;
+  lastX = e.clientX;
+  lastY = e.clientY;
+  document.body.classList.add("dragging");
+});
+
+window.addEventListener("mousemove", (e) => {
+  if (!dragging) return;
+  dragMove(e.clientX, e.clientY);
+});
+
+window.addEventListener("mouseup", () => {
+  if (dragging && dragDist > 6) suppressClick = true;
+  dragging = false;
+  document.body.classList.remove("dragging");
+});
+
+document.addEventListener("click", (e) => {
+  if (suppressClick) {
+    e.stopPropagation();
+    suppressClick = false;
+  }
+}, true);
+
+document.body.addEventListener("touchstart", (e) => {
+  if (viewMode === "flat") return;
+  if (e.target.closest("button")) return;
+  const t = e.touches[0];
+  dragging = true;
+  dragDist = 0;
+  lastX = t.clientX;
+  lastY = t.clientY;
+}, { passive: true });
+
+document.body.addEventListener("touchmove", (e) => {
+  if (!dragging) return;
+  e.preventDefault();
+  dragMove(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: false });
+
+document.body.addEventListener("touchend", () => {
+  if (dragging && dragDist > 6) suppressClick = true;
+  dragging = false;
+}, { passive: true });
+
+document.body.addEventListener("wheel", (e) => {
+  if (viewMode === "flat") return;
+  e.preventDefault();
+  zoom = Math.min(2.2, Math.max(0.5, zoom * (e.deltaY < 0 ? 1.1 : 1 / 1.1)));
+  applyCamera();
+}, { passive: false });
 
 initScores();
 init();
