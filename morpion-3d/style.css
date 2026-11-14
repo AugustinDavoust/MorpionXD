@@ -1,6 +1,6 @@
 :root {
-  --bg: #3a3a52;
-  --panel: #4a4a68;
+  --bg: #464662;
+  --panel: #565678;
   --accent: #e94560;
   --text: #eaeaea;
 }
@@ -141,7 +141,7 @@ button:hover { border-color: var(--accent); }
 .cube.flat {
   transform: none;
   height: auto;
-  width: calc(var(--cube) * 0.4);
+  width: calc(var(--cube) * 0.55);
   margin: 0 auto;
   display: flex;
   flex-direction: row;
