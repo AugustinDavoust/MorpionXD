@@ -43,10 +43,10 @@ let rx = 55, rz = 45;
 let zoom = 1;
 
 function applyCamera() {
+  boardEl.style.setProperty("--zoom", zoom);
   document.querySelectorAll("#board .cube").forEach(c => {
     c.style.setProperty("--rx", rx + "deg");
     c.style.setProperty("--rz", rz + "deg");
-    c.style.setProperty("--zoom", zoom);
   });
 }
 

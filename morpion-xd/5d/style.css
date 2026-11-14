@@ -209,6 +209,8 @@ button:hover { border-color: var(--accent); }
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
+  transform: scale(var(--zoom));
+  --zoom: 1;
 }
 
 .board.triple {
@@ -247,7 +249,7 @@ button:hover { border-color: var(--accent); }
   width: var(--cube);
   height: var(--cube);
   transform-style: preserve-3d;
-  transform: rotateX(var(--rx)) rotateZ(var(--rz)) scale3d(var(--zoom), var(--zoom), var(--zoom));
+  transform: rotateX(var(--rx)) rotateZ(var(--rz));
   --rx: 55deg;
   --rz: 45deg;
   --zoom: 1;
