@@ -144,8 +144,9 @@ button:hover { border-color: var(--accent); }
   width: calc(var(--cube) * 0.4);
   margin: 0 auto;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row;
+  justify-content: center;
+  gap: 12px;
 }
 
 .face {
@@ -295,13 +296,13 @@ button:hover { border-color: var(--accent); }
 .cellbox.win.x .cf.north,
 .cellbox.win.x .cf.south,
 .cellbox.win.x .cf.west,
-.cellbox.win.x .cf.east { background: rgba(0, 217, 255, 0.78); }
+.cellbox.win.x .cf.east { background: rgba(0, 217, 255, 0.88); }
 
 .cellbox.win.o .cf.top,
 .cellbox.win.o .cf.north,
 .cellbox.win.o .cf.south,
 .cellbox.win.o .cf.west,
-.cellbox.win.o .cf.east { background: rgba(255, 107, 157, 0.78); }
+.cellbox.win.o .cf.east { background: rgba(255, 107, 157, 0.88); }
 
 .mark {
   position: absolute;
@@ -355,8 +356,8 @@ button:hover { border-color: var(--accent); }
 
 .cube.flat .cellbox:not(.taken):hover { background: #45457a; }
 
-.cube.flat .cellbox.win.x { background: rgba(0, 217, 255, 0.78); }
-.cube.flat .cellbox.win.o { background: rgba(255, 107, 157, 0.78); }
+.cube.flat .cellbox.win.x { background: rgba(0, 217, 255, 0.88); }
+.cube.flat .cellbox.win.o { background: rgba(255, 107, 157, 0.88); }
 
 .cube.flat .cf { display: none; }
 
