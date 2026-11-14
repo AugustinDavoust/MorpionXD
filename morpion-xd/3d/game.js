@@ -55,6 +55,9 @@ function applyCamera() {
   currentCube.style.setProperty("--rx", rx + "deg");
   currentCube.style.setProperty("--rz", rz + "deg");
   currentCube.style.setProperty("--zoom", zoom);
+  const extra = Math.max(0, zoom - 1) * boardEl.offsetHeight / 2;
+  boardEl.style.setProperty("--mt", extra + "px");
+  boardEl.style.setProperty("--mb", extra + "px");
 }
 
 function init() {

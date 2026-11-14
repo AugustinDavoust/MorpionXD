@@ -208,7 +208,8 @@ button:hover { border-color: var(--accent); }
   flex-wrap: nowrap;
   align-items: center;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-top: var(--mt, 0px);
+  margin-bottom: calc(12px + var(--mb, 0px));
   transform: scale(var(--zoom));
   --zoom: 1;
 }
