@@ -1,6 +1,6 @@
 :root {
-  --bg: #464662;
-  --panel: #565678;
+  --bg: #3a3a52;
+  --panel: #4a4a68;
   --accent: #e94560;
   --text: #eaeaea;
 }
@@ -30,7 +30,7 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
   --cellw: calc((var(--cube) - 2 * var(--pad) - 2 * var(--gap)) / 3);
   --ch: var(--cellw);
   --depth: calc(var(--cellw) + var(--gap));
-  width: min(96vw, 560px);
+  width: min(96vw, 640px);
   height: 100%;
   padding: 8px 0;
   text-align: center;
@@ -329,7 +329,7 @@ button:hover { border-color: var(--accent); }
   background: transparent;
   border: none;
   padding: 0;
-  width: calc(var(--cube) * 0.55);
+  width: calc(var(--cube) * 0.65);
   flex: 0 0 auto;
 }
 
