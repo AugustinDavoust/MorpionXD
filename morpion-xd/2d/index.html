@@ -3,13 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Morpion 4D</title>
+  <title>Morpion</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="container">
-    <h1>Morpion 4D</h1>
-    <p class="subtitle">Hypercube 3×3×3×3 — 81 cases, 272 lignes gagnantes</p>
+    <a class="back" href="../index.html">← Menu</a>
+    <h1>Morpion</h1>
+
+    <div class="mode-selector">
+      <button id="mode-pvp" class="mode active">2 joueurs</button>
+      <button id="mode-ai" class="mode">Contre l'IA</button>
+    </div>
+
+    <div id="ai-options" class="ai-options hidden">
+      <button class="level active" data-level="easy">Facile</button>
+      <button class="level" data-level="medium">Moyen</button>
+      <button class="level" data-level="hard">Difficile</button>
+    </div>
 
     <p id="status" class="status">Au tour de ✕</p>
 

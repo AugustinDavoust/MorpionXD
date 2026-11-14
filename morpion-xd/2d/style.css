@@ -123,3 +123,15 @@ button:hover { border-color: var(--accent); }
 
 .score-box span { font-size: 13px; opacity: 0.7; }
 .score-box b { font-size: 22px; }
+
+.back {
+  display: block;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text);
+  text-decoration: none;
+  opacity: 0.55;
+  margin-bottom: 4px;
+}
+
+.back:hover { opacity: 1; }

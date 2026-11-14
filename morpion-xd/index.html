@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MorpionXD</title>
+  <style>
+    :root { --bg: #3a3a52; --panel: #4a4a68; --accent: #e94560; --text: #eaeaea; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .menu { text-align: center; padding: 24px; width: min(96vw, 640px); }
+    h1 { letter-spacing: 2px; font-size: clamp(28px, 6vw, 40px); }
+    .subtitle { opacity: 0.6; font-size: 14px; margin: 6px 0 28px; }
+    .games { display: flex; flex-direction: column; gap: 14px; }
+    .game {
+      display: block;
+      background: var(--panel);
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 18px 22px;
+      text-decoration: none;
+      color: var(--text);
+      text-align: left;
+      transition: all 0.15s ease;
+    }
+    .game:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .game h2 { font-size: 19px; margin-bottom: 4px; }
+    .game p { font-size: 13px; opacity: 0.65; line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <main class="menu">
+    <h1>MorpionXD</h1>
+    <p class="subtitle">Le morpion en toutes dimensions — choisis ton terrain de jeu</p>
+    <nav class="games">
+      <a class="game" href="2d/">
+        <h2>Morpion 2D</h2>
+        <p>Le classique 3×3 — 2 joueurs ou IA imbattable (3 niveaux)</p>
+      </a>
+      <a class="game" href="3d/">
+        <h2>Morpion 3D</h2>
+        <p>Cube 3×3×3 — 27 cases, 49 lignes gagnantes, 2 joueurs ou IA, caméra orbitale et vue à plat</p>
+      </a>
+      <a class="game" href="4d/">
+        <h2>Morpion 4D</h2>
+        <p>Hypercube 3×3×3×3 — 81 cases, 272 lignes gagnantes, 2 joueurs</p>
+      </a>
+    </nav>
+  </main>
+</body>
+</html>

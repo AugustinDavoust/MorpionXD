@@ -399,3 +399,15 @@ button:hover { border-color: var(--accent); }
   justify-content: center;
   gap: 10px;
 }
+
+.back {
+  display: block;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text);
+  text-decoration: none;
+  opacity: 0.55;
+  margin-bottom: 4px;
+}
+
+.back:hover { opacity: 1; }

@@ -155,3 +155,15 @@ button {
 }
 
 button:hover { border-color: var(--accent); }
+
+.back {
+  display: block;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text);
+  text-decoration: none;
+  opacity: 0.55;
+  margin-bottom: 4px;
+}
+
+.back:hover { opacity: 1; }
